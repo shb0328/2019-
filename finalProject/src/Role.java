@@ -1,20 +1,23 @@
 
-public class Role extends Thread{
+public class Role {
 	private int[] score = new int[3]; //0: 베프, 1: 절교, 2: 비지니스파트너
 	private int career = -1; //-1: 무직, 0: 창업, 1: 취직
-	private String client;
+	private int client;
 	private int player; //1 , 2
 	
-	public String getClient() {
+
+	public Role(int clientID,int player){
+		super();		
+		this.client = clientID;
+		this.player = player;
+		for(int i =0;i<score.length;++i)
+			score[i] = 0;
+	}
+	
+		public int getClient() {
 		return client;
 	}
 
-	public Role(String client/*client정보*/,int player){
-		super();		
-		this.client = client;
-		this.player = player;
-	}
-	
 	public int getPlayer() {
 		return player;
 	}
@@ -40,7 +43,4 @@ public class Role extends Thread{
 		return career;
 	}
 	
-	public void run() {
-		
-	}
 }
