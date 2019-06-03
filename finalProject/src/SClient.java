@@ -21,7 +21,8 @@ class ClientSender implements Runnable{
 			KeyIn=new Scanner(System.in);
 			out=new PrintWriter(c.getOutputStream(),true);
 			String userInput="";
-			System.out.print("Yout are "+c.getLocalPort()+" , Type Message(\"Bye\" to leave)\n");
+			System.out.print("You are "+c.getLocalPort()+" , Type Message(\"Bye\" to leave)\n");
+			System.out.println("혜빈 승은 RPG에 오신 것을 환영합니다!\n참가자가 두명이 되면 자동으로 시작합니다. 잠시만 기다려주세요.\n ====================== \n");
 			while((userInput=KeyIn.nextLine())!=null) {
 				out.println(userInput);
 				out.flush();

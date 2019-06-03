@@ -52,7 +52,6 @@ public class SServer implements Runnable {
 //			printServerSocketInfo(s);
 
 			System.out.println ("Server started: socket created on " + sPort);
-			String m = "SSLSocket based reverse echo, Type some words. exit '.'";
 
 
 
@@ -86,6 +85,8 @@ public class SServer implements Runnable {
 				 return i;
 			 return -1;
 	}
+	
+	
 	public void putClient(int clientID,String inputLine) {
 		for(int i=0;i<clientCount;i++)
 			if(clients[i].getClientID()==clientID) {
@@ -95,6 +96,8 @@ public class SServer implements Runnable {
 				clients[i].out.println(inputLine);
 			}
 	}
+	
+	
 	public void addClient(SSLServerSocket s) {
 		SSLSocket c=null;
 		
@@ -181,7 +184,7 @@ public class SServer implements Runnable {
 
 class ChatServerRunnable implements Runnable{
 
-	protected SSLSocket c=null;			//clientsocket
+	protected SSLSocket c=null;			
 	protected PrintWriter out=null;
 	protected BufferedReader in=null;
 	public int clientID=-1;
