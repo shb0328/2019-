@@ -12,7 +12,7 @@ public class SServer implements Runnable {
 	KeyStore ks=null;
 	KeyManagerFactory kmf=null;
 	SSLContext sc=null;
-	String runRoot="C:/eclipse_workspace/networkP/finalProject/bin/";
+	String runRoot="C:/Users/tmddms2292/eclipse-workspace/networking/finalProject/bin/";
 	String ksName=runRoot+".keystore/SSLSocketServerKey";
 	
 	char keyStorePass[]="505322".toCharArray();
@@ -52,7 +52,6 @@ public class SServer implements Runnable {
 //			printServerSocketInfo(s);
 
 			System.out.println ("Server started: socket created on " + sPort);
-			String m = "SSLSocket based reverse echo, Type some words. exit '.'";
 
 
 
@@ -86,15 +85,23 @@ public class SServer implements Runnable {
 				 return i;
 			 return -1;
 	}
+	
+	
 	public void putClient(int clientID,String inputLine) {
 		for(int i=0;i<clientCount;i++)
 			if(clients[i].getClientID()==clientID) {
 				System.out.println("Writer :"+clientID);
 			}else {
 				System.out.println("write: "+clients[i].getClientID());
-				clients[i].out.println(inputLine);
+				if(i == 0)
+					clients[i].out.println("혜빈 : "+inputLine);
+				else 
+					clients[i].out.println("승은 : "+inputLine);
+
 			}
 	}
+	
+	
 	public void addClient(SSLServerSocket s) {
 		SSLSocket c=null;
 		
@@ -106,7 +113,7 @@ public class SServer implements Runnable {
 			}catch(IOException i) {
 				System.out.println("Accept() fail: "+i);
 			}
-			clients[clientCount]=new ChatServerRunnable(c,this);
+			clients[clientCount]=new ChatServerRunnable(c,this,clientCount);
 			new Thread(clients[clientCount]).start();
 			clientCount++;
 			System.out.println("Client connected : "+c.getPort()+", CurrentClient: "+clientCount);
@@ -114,7 +121,7 @@ public class SServer implements Runnable {
 		}else {
 			try {
 				SSLSocket dummySocket=(SSLSocket)s.accept();
-				ChatServerRunnable dummyRunnable=new ChatServerRunnable(dummySocket,this);
+				ChatServerRunnable dummyRunnable=new ChatServerRunnable(dummySocket,this,-1);
 				new Thread(dummyRunnable);
 				dummyRunnable.out.println(dummySocket.getPort()+"<Sorry maximum user connected now");
 				System.out.println("Client refused: maxumum connection "+clients.length+" reached");
@@ -181,16 +188,18 @@ public class SServer implements Runnable {
 
 class ChatServerRunnable implements Runnable{
 
-	protected SSLSocket c=null;			//clientsocket
+	protected SSLSocket c=null;			
 	protected PrintWriter out=null;
 	protected BufferedReader in=null;
 	public int clientID=-1;
 	protected SServer server=null;
+	protected int playernumber = -1;
 
-	public ChatServerRunnable(SSLSocket c,SServer server) {
-
+	public ChatServerRunnable(SSLSocket c,SServer server,int playernumber) {
+		
 		this.c=c;
 		this.server=server;
+		this.playernumber = playernumber;
 		
 		clientID=c.getPort();
 		try {
@@ -203,9 +212,11 @@ class ChatServerRunnable implements Runnable{
 	//run
 	public void run() {
 		try {
+			
+			
 			String inputLine;
 			while((inputLine=in.readLine())!=null) {
-				server.putClient(getClientID(),getClientID()+":"+inputLine);
+				server.putClient(getClientID(),inputLine);
 				if(inputLine.equalsIgnoreCase("Bye"))
 					break;
 			}
