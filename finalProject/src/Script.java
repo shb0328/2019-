@@ -13,7 +13,16 @@ public class Script {
 	public static void main(String[] arg) {
 		Script sc = new Script();
 	}
+	
 
+	public String[][] get1PScript() {
+		return str1P;
+	}
+	
+	public String[][][] get2PScript(){
+		return str2P;
+	}
+	
 	public Script() {
 		super();
 		str1P = new String[10][];
