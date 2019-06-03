@@ -101,6 +101,10 @@ public class SServer implements Runnable {
 			}
 	}
 	
+	public void putAllClient(String inputLine) {
+		for(int i =0; i<clientCount;++i) 
+			clients[i].out.println(inputLine);
+	}
 	
 	public void addClient(SSLServerSocket s) {
 		SSLSocket c=null;
@@ -116,6 +120,15 @@ public class SServer implements Runnable {
 			clients[clientCount]=new ChatServerRunnable(c,this,clientCount);
 			new Thread(clients[clientCount]).start();
 			clientCount++;
+			if(clientCount == clients.length-1) {
+				String startmm = "==========\n게임시작\n==========\n당신과 상대방의 선택에 따라 달라지는 여러가지 엔딩을 만나보세요\n=========="
+						+ "\n혜빈이와 승은이는 같이 숭실대학교 4학년에 재학중인 친구사이입니다.\n이번 학기에 네트워크 프로그래밍 수업을 같이 듣게 되었는데요,"
+						+ "\n지난 학기가 종강하고, 방학 동안 한번도 만나지 않았던 둘은  과연 베프가 될 수 있을까요?\n";
+				putAllClient(startmm);
+				putClient(clients[0].getClientID(),"당신은 \"혜빈(1P)\"입니다.\n선택지를 골라주세요\n");
+				putClient(clients[1].getClientID(),"당신은 \"승은(2P)\"입니다.\n\"혜빈\"이가 선택지를 고르는 동안 기다려주세요.\n");
+
+			}
 			System.out.println("Client connected : "+c.getPort()+", CurrentClient: "+clientCount);
 			
 		}else {
@@ -194,14 +207,15 @@ class ChatServerRunnable implements Runnable{
 	public int clientID=-1;
 	protected SServer server=null;
 	protected int playernumber = -1;
+	protected Role role = null;
 
 	public ChatServerRunnable(SSLSocket c,SServer server,int playernumber) {
 		
 		this.c=c;
 		this.server=server;
 		this.playernumber = playernumber;
-		
 		clientID=c.getPort();
+		
 		try {
 			out=new PrintWriter(c.getOutputStream(),true);
 			in=new BufferedReader(new InputStreamReader(c.getInputStream()));
@@ -212,7 +226,9 @@ class ChatServerRunnable implements Runnable{
 	//run
 	public void run() {
 		try {
+			role = new Role(clientID, playernumber);
 			
+
 			
 			String inputLine;
 			while((inputLine=in.readLine())!=null) {
