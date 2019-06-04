@@ -9,6 +9,8 @@ import javax.net.ssl.*;
 
 public class SServer implements Runnable {
 
+	Resource scoreboard = null;
+	
 	KeyStore ks=null;
 	KeyManagerFactory kmf=null;
 	SSLContext sc=null;
@@ -19,7 +21,7 @@ public class SServer implements Runnable {
 	char keyPass[]="505322".toCharArray();
 	
 	
-	ChatServerRunnable clients[]=new ChatServerRunnable[3];
+	ChatServerRunnable clients[]=new ChatServerRunnable[2];
 	public int clientCount=0;
 	
 	int sPort=-1;
@@ -126,8 +128,12 @@ public class SServer implements Runnable {
 			}
 			clients[clientCount]=new ChatServerRunnable(c,this,clientCount);
 			new Thread(clients[clientCount]).start();
+			if(scoreboard == null) {
+				scoreboard =new Resource();	
+			}
+			
 			clientCount++;
-			if(clientCount == clients.length-1) {
+			if(clientCount == clients.length) {
 				String startmm = "==============================\n게임시작\n==============================\n당신과 상대방의 선택에 따라 달라지는 여러가지 엔딩을 만나보세요\n=============================="
 						+ "\n혜빈이와 승은이는 같이 숭실대학교 4학년에 재학중인 친구사이입니다.\n이번 학기에 네트워크 프로그래밍 수업을 같이 듣게 되었는데요,"
 						+ "\n지난 학기가 종강하고, 방학 동안 한번도 만나지 않았던 둘은  과연 베프가 될 수 있을까요?\n";
@@ -166,6 +172,7 @@ public class SServer implements Runnable {
 				if(clientCount < clients.length) {
 					putSystem2Client(clients[0].getClientID(), "상대방이 접속을 종료했습니다 T.T 게임을 종료합니다.");
 					delClient(clients[0].getClientID());
+					scoreboard = null;
 				}
 				System.out.println("Client removed : "+clientID+"at clients["+pos+"], CurrentClient: "+clientCount);
 				endClient.close();
