@@ -1,16 +1,22 @@
 
 import java.io.*;
 import java.net.*;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.util.Scanner;
-
 import javax.net.ssl.*;
 
+import java.rmi.Naming;
+
+import java.rmi.RemoteException;
+import java.net.MalformedURLException;
 
 class ClientSender implements Runnable{
 
 	 static SSLSocket c=null;
 
 	ClientSender(SSLSocket c){
+
 		this.c=c;
 
 	}
@@ -22,7 +28,7 @@ class ClientSender implements Runnable{
 			out=new PrintWriter(c.getOutputStream(),true);
 			String userInput="";
 			System.out.print("You are "+c.getLocalPort()+" , Type Message(\"Bye\" to leave)\n");
-			System.out.println("í˜œë¹ˆ ìŠ¹ì€ RPGì— ì˜¤ì‹  ê²ƒì„ í™˜ì˜í•©ë‹ˆë‹¤!\nì°¸ê°€ìê°€ ë‘ëª…ì´ ë˜ë©´ ìë™ìœ¼ë¡œ ì‹œì‘í•©ë‹ˆë‹¤. ì ì‹œë§Œ ê¸°ë‹¤ë ¤ì£¼ì„¸ìš”.\n ====================== \n");
+	         System.out.println("Çıºó ½ÂÀº RPG¿¡ ¿À½Å °ÍÀ» È¯¿µÇÕ´Ï´Ù!\nÂü°¡ÀÚ°¡ µÎ¸íÀÌ µÇ¸é ÀÚµ¿À¸·Î ½ÃÀÛÇÕ´Ï´Ù. Àá½Ã¸¸ ±â´Ù·ÁÁÖ¼¼¿ä.\n ====================== \n");
 			while((userInput=KeyIn.nextLine())!=null) {
 				out.println(userInput);
 				out.flush();
@@ -48,14 +54,30 @@ class ClientSender implements Runnable{
 
 class ClientReceiver implements Runnable{
 	static SSLSocket c=null;
-
+	//static SSLSocketFactory f=null;
+	//private SSLServerSocket s=null;
+	//static String sServer="";
+	//static int sPort=-1;
 	
 	ClientReceiver(SSLSocket c){
 		this.c=c;
-
+	//	this.f=f;
+	//	this.sServer=sServer;
+	//	this.sPort=sPort;
+	//	this.s=s;
 	}
 	public void run() {
-
+		/*
+		try {
+		f=(SSLSocketFactory)SSLSocketFactory.getDefault();
+		c=(SSLSocket)f.createSocket(sServer,sPort);
+		
+		String[] supported=c.getSupportedCipherSuites();
+		c.setEnabledCipherSuites(supported);
+	//	printSocketInfo(c);
+		
+		c.startHandshake();
+		*/
 		while(c.isConnected()) {
 			BufferedReader in=null;
 			try {
@@ -89,10 +111,22 @@ public class SClient {
 	static SSLSocket c=null;
 	static SSLSocket c2=null;
 	
-public static void main(String[] args) {
+public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException  {
 	
+	//BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+	//PrintStream out = System.out;
+	
+//	SSLSocketFactory f = null;
+//	SSLSocket c = null;
+	
+//	BufferedWriter w = null;
+//	BufferedReader r = null;
+
+	//String sServer = "";
+	//int sPort = -1;
+//	SocketChannel socketChannel=null;
 	if (args.length != 2) {
-		System.out.println("Usage: Classname ServerName securePort");
+		System.out.println("Usage: Classname ServerName serviceName");
 		System.exit(1);
 	}
 	sServer = args[0];
@@ -108,16 +142,20 @@ public static void main(String[] args) {
 		String[] supported=c.getSupportedCipherSuites();
 		c.setEnabledCipherSuites(supported);
 		printSocketInfo(c);
+
+		c.startHandshake();
 		
-	//	c.startHandshake();
 		//clientID=c.getLocalPort();
-		
+		Calculator calc=(Calculator)Naming.lookup("rmi://127.0.0.1/myserver");
+		System.out.println("Minus(4,3): "+calc.sub(4,3));
 	}catch(BindException b) {
 		System.out.println("Can't bind on: "+sPort);
 		System.exit(1);
 	}catch(IOException i) {
 		System.out.println(i);
 		System.exit(1);
+	}catch(java.lang.ArithmeticException ae) {
+		System.out.println("java.lang.ArithmeticException "+ae);
 	}
 	new Thread(new ClientReceiver(c)).start();
 	new Thread(new ClientSender(c)).start();
